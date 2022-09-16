@@ -1,6 +1,8 @@
 package com.cst438.controllers;
 
-public class StudentController
-{
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class StudentController{
 
 }

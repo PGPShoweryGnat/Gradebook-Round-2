@@ -1,5 +1,6 @@
 package com.cst438.controllers;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,11 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -155,6 +158,60 @@ public class GradeBookController {
 		}
 		
 	}
+
+	@PostMapping("/assignment")
+	@Transactional
+	//Code for adding an assignment to the gradebook
+	public AssignmentListDTO.AssignmentDTO addingAssignment(@RequestBody AssignmentListDTO.AssignmentDTO assignment)
+	{
+	   Assignment a = new Assignment ();
+	   a.setName(assignment.assignmentName);
+	   //Converts Date from String, into Java Date Object
+	   a.setDueDate(Date.valueOf(assignment.dueDate));
+	   a.setNeedsGrading(1);
+	   //CrudeRepository inherits 
+	   Course c = courseRepository.findById(assignment.courseId).orElse(null);
+	   if (c == null) {
+	      throw new ResponseStatusException( HttpStatus.BAD_REQUEST,"Invalid Course");
+	   }
+	   a.setCourse(c);
+	   //a is the variable holding the assignment entity. Refer to 166
+	   Assignment newa = assignmentRepository.save(a);
+	   //Don't return an entity, such as by return newa;
+	   assignment.assignmentId = newa.getId();
+	   return assignment;
+	}
+	@DeleteMapping("/assignment/{id}")
+   @Transactional
+   //Code for deleting an assignment from the gradebook
+   public void deletingAssignment(@PathVariable("id") Integer assignmentId )
+   {
+	   //This gets us the assignment, using the assignmentId variable created earlier based on the primary key provided from the user
+	   Assignment newa = assignmentRepository.findById(assignmentId).get();
+	   if(newa == null) {
+	      throw new ResponseStatusException( HttpStatus.BAD_REQUEST,"Invalid Assignment");
+	   }
+	   //If assignment is found, delete from the Repository
+	   assignmentRepository.delete(newa);
+      //No need to return anything for a delete
+   }
+	
+	@PutMapping("/assignment/{id}")
+	@Transactional
+	//Code for changing name of an assignment
+	// Example for PostMan: /assignment/12?name=new name
+	public void updateAssignmentName(@RequestParam ("name") String name, @PathVariable("id") Integer assignmentId )
+	{
+	     Assignment newa = assignmentRepository.findById(assignmentId).get();
+	      if(newa == null) {
+	         throw new ResponseStatusException( HttpStatus.BAD_REQUEST,"Invalid Assignment");
+	      }
+	      //Part that changes the name to the given name
+	     newa.setName(name);
+	     assignmentRepository.save(newa);
+	}
+	
+	
 	
 	private Assignment checkAssignment(int assignmentId, String email) {
 		// get assignment 
@@ -170,4 +227,6 @@ public class GradeBookController {
 		return assignment;
 	}
 
+	
+	
 }

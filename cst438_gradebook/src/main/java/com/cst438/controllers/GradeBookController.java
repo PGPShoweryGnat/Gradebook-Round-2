@@ -161,6 +161,7 @@ public class GradeBookController {
 
 	@PostMapping("/assignment")
 	@Transactional
+	//Changed below
 	//Code for adding an assignment to the gradebook
 	public AssignmentListDTO.AssignmentDTO addingAssignment(@RequestBody AssignmentListDTO.AssignmentDTO assignment)
 	{
@@ -183,6 +184,7 @@ public class GradeBookController {
 	}
 	@DeleteMapping("/assignment/{id}")
    @Transactional
+   //Changed below
    //Code for deleting an assignment from the gradebook
    public void deletingAssignment(@PathVariable("id") Integer assignmentId )
    {
@@ -198,6 +200,7 @@ public class GradeBookController {
 	
 	@PutMapping("/assignment/{id}")
 	@Transactional
+	//Changed below
 	//Code for changing name of an assignment
 	// Example for PostMan: /assignment/12?name=new name
 	public void updateAssignmentName(@RequestParam ("name") String name, @PathVariable("id") Integer assignmentId )

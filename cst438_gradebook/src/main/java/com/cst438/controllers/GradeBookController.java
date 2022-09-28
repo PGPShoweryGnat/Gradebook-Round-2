@@ -31,7 +31,7 @@ import com.cst438.domain.GradebookDTO;
 import com.cst438.services.RegistrationService;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:3000","http://localhost:3001"})
+@CrossOrigin(origins = {"http://localhost:3000","http://localhost:3001", "http://localhost:8081"})
 public class GradeBookController {
 	
 	@Autowired
@@ -161,28 +161,42 @@ public class GradeBookController {
 
 	@PostMapping("/assignment")
 	@Transactional
+	//Changed below
 	//Code for adding an assignment to the gradebook
 	public AssignmentListDTO.AssignmentDTO addingAssignment(@RequestBody AssignmentListDTO.AssignmentDTO assignment)
 	{
+	   System.out.println("test1");
 	   Assignment a = new Assignment ();
+	   System.out.println("test2");
 	   a.setName(assignment.assignmentName);
+	   System.out.println("test3");
 	   //Converts Date from String, into Java Date Object
 	   a.setDueDate(Date.valueOf(assignment.dueDate));
+	   System.out.println("test4");
 	   a.setNeedsGrading(1);
+	   System.out.println("test5");
+	   System.out.println(assignment.courseId);
 	   //CrudeRepository inherits 
-	   Course c = courseRepository.findById(assignment.courseId).orElse(null);
+	   Course c = courseRepository.findByTitle(assignment.courseTitle);
+	   System.out.println("test");
 	   if (c == null) {
 	      throw new ResponseStatusException( HttpStatus.BAD_REQUEST,"Invalid Course");
 	   }
+	   System.out.println("test6");
 	   a.setCourse(c);
+	   System.out.println("test7");
 	   //a is the variable holding the assignment entity. Refer to 166
 	   Assignment newa = assignmentRepository.save(a);
+	   System.out.println("test8");
 	   //Don't return an entity, such as by return newa;
 	   assignment.assignmentId = newa.getId();
+	   System.out.println("test9");
+	   System.out.println(assignment);
 	   return assignment;
 	}
 	@DeleteMapping("/assignment/{id}")
    @Transactional
+   //Changed below
    //Code for deleting an assignment from the gradebook
    public void deletingAssignment(@PathVariable("id") Integer assignmentId )
    {
@@ -198,6 +212,7 @@ public class GradeBookController {
 	
 	@PutMapping("/assignment/{id}")
 	@Transactional
+	//Changed below
 	//Code for changing name of an assignment
 	// Example for PostMan: /assignment/12?name=new name
 	public void updateAssignmentName(@RequestParam ("name") String name, @PathVariable("id") Integer assignmentId )
